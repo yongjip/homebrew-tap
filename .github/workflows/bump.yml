@@ -1,0 +1,32 @@
+name: Bump formulae from PyPI
+
+# Self-contained auto-bump: checks PyPI daily and rewrites url/sha256 when a
+# new release appears. Runs entirely on this repo's own GITHUB_TOKEN — no
+# cross-repo credentials to provision or rotate.
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bump mergetrain
+        run: python3 scripts/bump.py Formula/mergetrain.rb mergetrain
+      - name: Commit if changed
+        run: |
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add -A
+            VERSION="$(sed -n 's/.*mergetrain-\(.*\)\.tar\.gz.*/\1/p' Formula/mergetrain.rb | head -1)"
+            git commit -m "mergetrain ${VERSION}"
+            git push
+          else
+            echo "formula already current"
+          fi
