@@ -2,9 +2,14 @@ name: CI
 
 # A bad bump used to land untested: the daily job rewrites url/sha256 and pushes
 # straight to main, with nothing checking that the result still builds. This runs
-# Homebrew's own test-bot over the tap on every push and pull request, so a
-# formula that cannot install, cannot pass its test block, or fails audit shows
-# up as a red commit instead of a broken `brew install` for someone else.
+# Homebrew's own checks over the tap on every push and pull request, so a formula
+# that cannot install, cannot pass its test block, or fails audit shows up as a
+# red commit instead of a broken `brew install` for someone else.
+#
+# Homebrew/actions/setup-homebrew already links Library/Taps/yongjip/homebrew-tap
+# to this workspace at the ref under test, so the brew commands below operate on
+# the code in this push or pull request. No extra checkout or symlink is needed --
+# adding one lands *inside* that directory and breaks the tap.
 on:
   push:
     branches: [main]
@@ -24,38 +29,27 @@ jobs:
     steps:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
-      - uses: actions/checkout@v4
-        with:
-          path: tap
-      - name: Link the checkout into Homebrew's tap directory
+      - name: Show the formula under test
         run: |
-          target="$(brew --repository)/Library/Taps/yongjip/homebrew-tap"
-          mkdir -p "$(dirname "$target")"
-          ln -s "${GITHUB_WORKSPACE}/tap" "$target"
-      - name: Style and audit
-        run: |
-          brew style yongjip/tap
-          brew audit --strict --online --tap=yongjip/tap
+          cd "$(brew --repository yongjip/tap)"
+          git log --oneline -1
+          grep -E 'url|depends_on' Formula/mergetrain.rb
+      - name: Style
+        run: brew style yongjip/tap
+      - name: Audit
+        run: brew audit --strict --online --tap=yongjip/tap
 
   formula:
     strategy:
       fail-fast: false
       matrix:
-        # Both platforms the tap claims to serve. Source builds only: the tap
-        # publishes no bottles, so this is exactly what a user runs.
+        # Both platforms the tap serves. Source builds only: the tap publishes no
+        # bottles, so this is exactly what a user runs.
         os: [macos-latest, ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
-      - uses: actions/checkout@v4
-        with:
-          path: tap
-      - name: Link the checkout into Homebrew's tap directory
-        run: |
-          target="$(brew --repository)/Library/Taps/yongjip/homebrew-tap"
-          mkdir -p "$(dirname "$target")"
-          ln -s "${GITHUB_WORKSPACE}/tap" "$target"
       - name: Build from source
         run: brew install --build-from-source yongjip/tap/mergetrain
       - name: Run the formula's test block
