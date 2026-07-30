@@ -3,8 +3,8 @@ class Mergetrain < Formula
 
   desc "Local-first merge queue for parallel coding-agent worktrees"
   homepage "https://github.com/yongjip/mergetrain"
-  url "https://files.pythonhosted.org/packages/65/67/6994e04836ef328337ae4747c4817ede3d8b4c12e9e71481418a4178743f/mergetrain-1.1.0.tar.gz"
-  sha256 "3b2eca626cd935b84d9dd654a40920df002565063119e149a774e0489c715762"
+  url "https://files.pythonhosted.org/packages/90/93/8a80b26bda98d91194add35b5f31e8ede009037bcae95510928e0083a1ff/mergetrain-1.2.0.tar.gz"
+  sha256 "c6fda64db0ccd5df0e143f7f1acdb416fe7c0f9bb477869fb1da470272776c46"
   license "MIT"
 
   head "https://github.com/yongjip/mergetrain.git", branch: "main"
