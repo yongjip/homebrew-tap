@@ -25,7 +25,7 @@ class Mergetrain < Formula
     # version this formula claims to have built.
     require "json"
     payload = JSON.parse(shell_output("#{bin}/mergetrain version --json"))
-    assert_equal 1, payload["contract_version"]
+    assert_equal 2, payload["contract_version"]
     assert_equal true, payload["ok"]
     assert_equal version.to_s, payload["version"] unless build.head?
   end
