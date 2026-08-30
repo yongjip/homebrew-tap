@@ -9,6 +9,7 @@ class Mergetrain < Formula
 
   head "https://github.com/yongjip/mergetrain.git", branch: "main"
 
+  depends_on "libyaml"
   depends_on "python@3.14"
 
   def install
