@@ -28,7 +28,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+        # Pin the immutable revision recommended by the action's deprecation
+        # warning; tracking master would silently stop updating after Homebrew 5.2.
+        uses: Homebrew/actions/setup-homebrew@1f8e202ffddf94def7f42f6fa3a482e821489f9c
       - name: Show the formula under test
         run: |
           cd "$(brew --repository yongjip/tap)"
@@ -49,7 +51,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+        uses: Homebrew/actions/setup-homebrew@1f8e202ffddf94def7f42f6fa3a482e821489f9c
       - name: Build from source
         run: brew install --build-from-source yongjip/tap/mergetrain
       - name: Run the formula's test block
