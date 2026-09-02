@@ -9,16 +9,18 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: write
 
 jobs:
   bump:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.0
       - name: Bump mergetrain
         run: python3 scripts/bump.py Formula/mergetrain.rb mergetrain
       - name: Commit if changed
+        id: commit
         run: |
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
@@ -27,6 +29,38 @@ jobs:
             VERSION="$(sed -n 's/.*mergetrain-\(.*\)\.tar\.gz.*/\1/p' Formula/mergetrain.rb | head -1)"
             git commit -m "mergetrain ${VERSION}"
             git push
+            echo "sha=$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
           else
             echo "formula already current"
           fi
+      - name: Verify the bumped formula
+        if: steps.commit.outputs.sha != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUMP_SHA: ${{ steps.commit.outputs.sha }}
+        run: |
+          # Pushes made with GITHUB_TOKEN intentionally do not emit another
+          # push workflow. Dispatch CI explicitly and bind the result to the
+          # exact bump commit before calling the automation successful.
+          gh workflow run ci.yml --ref main
+          RUN_ID=""
+          tries=0
+          while [ "${tries}" -lt 30 ]; do
+            RUN_ID="$(gh run list \
+              --workflow ci.yml \
+              --event workflow_dispatch \
+              --commit "${BUMP_SHA}" \
+              --limit 1 \
+              --json databaseId \
+              --jq '.[0].databaseId // empty')"
+            if [ -n "${RUN_ID}" ]; then
+              break
+            fi
+            tries=$((tries + 1))
+            sleep 2
+          done
+          if [ -z "${RUN_ID}" ]; then
+            echo "unable to find CI run for bump ${BUMP_SHA}" >&2
+            exit 1
+          fi
+          gh run watch "${RUN_ID}" --exit-status --interval 10
