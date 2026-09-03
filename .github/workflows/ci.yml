@@ -59,4 +59,6 @@ jobs:
       - name: Check the installed binary directly
         run: |
           mergetrain --version
-          mergetrain version --json
+          mergetrain --help
+          mkdir -p "${RUNNER_TEMP}/mergetrain-smoke"
+          mergetrain --repo "${RUNNER_TEMP}/mergetrain-smoke" status --json --diagnose
