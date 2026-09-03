@@ -1,7 +1,7 @@
 class Mergetrain < Formula
   include Language::Python::Virtualenv
 
-  desc "Local-first merge queue for parallel coding-agent worktrees"
+  desc "Local deploy train for coding-agent worktrees"
   homepage "https://github.com/yongjip/mergetrain"
   url "https://files.pythonhosted.org/packages/02/82/5aff02a46546af2a02f7e6212d032b0f00e21414c5332c922041912be93d/mergetrain-3.0.0.tar.gz"
   sha256 "f4745f63a51e9a4c07642f19a3e4b849786d632b68a351470864d77a83e07b3b"
@@ -23,16 +23,18 @@ class Mergetrain < Formula
 
   test do
     assert_match "mergetrain #{version}", shell_output("#{bin}/mergetrain --version")
-    assert_match "agent contract", shell_output("#{bin}/mergetrain agent-contract")
+    help = shell_output("#{bin}/mergetrain --help")
+    assert_match "{init,status,enqueue,validate,deploy,inspect}", help
 
-    # mergetrain's whole interface for agents is versioned JSON, so a formula
-    # that installs a runnable binary is not enough: check the machine contract
-    # the same way a consumer would, and that the reported version is the
-    # version this formula claims to have built.
+    # Check the stable operator contract through a public, read-only command.
+    # An empty testpath is intentionally reported as unconfigured rather than
+    # treated as an execution failure.
     require "json"
-    payload = JSON.parse(shell_output("#{bin}/mergetrain version --json"))
-    assert_equal 2, payload["contract_version"]
+    status = shell_output("#{bin}/mergetrain --repo #{testpath} status --json --diagnose")
+    payload = JSON.parse(status)
+    assert_equal 3, payload["contract_version"]
     assert_equal true, payload["ok"]
-    assert_equal version.to_s, payload["version"] unless build.head?
+    assert_equal "unconfigured", payload["health"]
+    assert_equal version.to_s, payload.dig("diagnostics", "version") unless build.head?
   end
 end
