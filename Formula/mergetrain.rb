@@ -3,8 +3,8 @@ class Mergetrain < Formula
 
   desc "Local deploy train for coding-agent worktrees"
   homepage "https://github.com/yongjip/mergetrain"
-  url "https://files.pythonhosted.org/packages/b3/70/7b182984e8648e4d286e0865ddd86bd43a8323576d1eee3d7f68acd46ea7/mergetrain-3.0.1.tar.gz"
-  sha256 "5bc42e7939104aee8d7e659cd730f29553fd9dc227303ae11c02b4c35a90b267"
+  url "https://files.pythonhosted.org/packages/61/fb/2ff9b38084f8d658a2a0465c0585da87b177ab37a4bf66cab36be2e164d5/mergetrain-3.0.2.tar.gz"
+  sha256 "77d9ab095ce1daf3eabd04736c7452022a7e14ef6a28e86438dcc28e9808a915"
   license "MIT"
 
   head "https://github.com/yongjip/mergetrain.git", branch: "main"
