@@ -1,7 +1,7 @@
 class Mergetrain < Formula
   include Language::Python::Virtualenv
 
-  desc "Local deploy train for coding-agent worktrees"
+  desc "Queue and test branches from parallel coding-agent worktrees"
   homepage "https://github.com/yongjip/mergetrain"
   url "https://files.pythonhosted.org/packages/61/fb/2ff9b38084f8d658a2a0465c0585da87b177ab37a4bf66cab36be2e164d5/mergetrain-3.0.2.tar.gz"
   sha256 "77d9ab095ce1daf3eabd04736c7452022a7e14ef6a28e86438dcc28e9808a915"
@@ -32,7 +32,7 @@ class Mergetrain < Formula
     require "json"
     status = shell_output("#{bin}/mergetrain --repo #{testpath} status --json --diagnose")
     payload = JSON.parse(status)
-    assert_equal 3, payload["contract_version"]
+    assert_equal 4, payload["contract_version"]
     assert_equal true, payload["ok"]
     assert_equal "unconfigured", payload["health"]
     assert_equal version.to_s, payload.dig("diagnostics", "version") unless build.head?
