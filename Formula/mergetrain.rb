@@ -32,7 +32,7 @@ class Mergetrain < Formula
     require "json"
     status = shell_output("#{bin}/mergetrain --repo #{testpath} status --json --diagnose")
     payload = JSON.parse(status)
-    assert_equal 4, payload["contract_version"]
+    assert_equal 5, payload["contract_version"]
     assert_equal true, payload["ok"]
     assert_equal "unconfigured", payload["health"]
     assert_equal version.to_s, payload.dig("diagnostics", "version") unless build.head?
