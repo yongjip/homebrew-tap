@@ -3,8 +3,8 @@ class Mergetrain < Formula
 
   desc "Queue and test branches from parallel coding-agent worktrees"
   homepage "https://github.com/yongjip/mergetrain"
-  url "https://files.pythonhosted.org/packages/b4/b3/d7cebcb47c52200691e0f4dee9e31f565fb3ccc40e81ef9904020e26a04b/mergetrain-3.6.0.tar.gz"
-  sha256 "e90986bfbdb0d1ad06c877f8a9f10f0d94d3cf40fec50781d40c0aaffded8f4b"
+  url "https://files.pythonhosted.org/packages/41/1d/4f3ca45a05449bf6bd7d645f23927aa7546f475b6e12b0d310e359550708/mergetrain-3.7.0.tar.gz"
+  sha256 "84da229475cbe37963466bf03547125b593944fa4928cf081611017012d68313"
   license "MIT"
 
   head "https://github.com/yongjip/mergetrain.git", branch: "main"
